@@ -1,4 +1,121 @@
+@font-face {
+    font-family: "spotify";
+    src: url("GothamBook.ttf");
+}
+
+*{
+    font-family: "spotify";
+}
+
+h1 {
+    font-size: 55px;
+    font-weight: bold;
+    text-align: center;
+}
+
 html {
-    background-color: rgb(18,18,18);
+    background-color: rgb(33,33,33);
     color: rgb(29,185,84)
+}
+
+.banner {
+    background-color: rgb(11, 11, 11);
+    height: 100px;
+
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+
+    display: flex;
+    justify-content: center; /* Horizontally centers the text */
+    align-items: center;
+}
+
+.banner-text {
+    text-align: center;
+}
+
+.tutorial {
+    padding: 5px;
+    border-bottom: 1px solid currentColor;
+    border-top: 1px solid currentColor;
+}
+
+.songs, .form {
+    text-align: center; 
+    margin-top: 150px;
+    margin-left: 500px;
+    margin-right: 500px;
+    padding: 10px;
+    border: 2px solid rgb(18,18,18);
+    border-radius: 8px;
+    background-color: rgb(18,18,18);
+}
+
+label {
+    font-size: 30px;
+    display: block;
+}
+
+select, input[type="number"], button[type="submit"] {
+    width: 50%;
+    padding: 3px;
+    font-size: 23px;
+    margin: 5px;
+    border: 1.5px solid rgb(29,185,84);
+    border-radius: 4px;
+    background-color: rgb(4, 4, 4);
+
+    color: rgb(29,185,84);
+    text-align: center;
+}
+
+select:focus, input[type="number"]:focus, button[type="submit"]:focus {
+    border-color: rgb(9, 111, 45);
+    outline: none;
+}
+
+select option {
+    background-color: rgb(33,33,33);
+    color: rgb(29,185,84);
+    padding: 10px;
+}
+
+select option:checked {
+    background-color: rgb(18,18,18);
+    padding: 15px;
+}
+
+button[type="submit"] {
+    margin-top: 15px;
+    width: 75%;
+    font-size: 33px;
+}
+
+.info_header {
+    padding: 5px;
+    border-bottom: 1px solid currentColor;
+    border-top: 1px solid currentColor;
+    text-align: center;
+    margin-left: 500px;
+    margin-right: 500px;
+    font-size: 35px;
+}
+
+.info {
+    margin-top: 150px;
+    margin-left: 250px;
+    margin-right: 250px;
+    padding: 10px;
+    border: 2px solid rgb(18,18,18);
+    border-radius: 8px;
+    background-color: rgb(18,18,18);
+
+    line-height: 1.3;
 }

@@ -7,10 +7,16 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Top Songs</h1>
+    <section class="banner">
+        <h1 class="banner-text">
+            Top Songs
+        </h1>
+    </section>
     <br>
-    {% for song in outcome %}
-        <h1>{{ song }}</h1>
-    {% endfor %}
+    <div class="songs">
+        {% for song in outcome %}
+            <h2>{{ song }}</h2>
+        {% endfor %}
+    </div>
 </body>
 </html>
