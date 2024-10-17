@@ -60,12 +60,14 @@ def callback():
     if not code:
         print("No code found in request.")
     session["code"] = code
+    session["profile_pic"] = GetProfilePic(code)
     return redirect(url_for("Home"))
     #return redirect(url_for("Filters", code=code))
 
 @app.route("/home")
 def Home():
-    return render_template("home.html")
+    profile_pic = session.get("profile_pic")
+    return render_template("home.html", profile_pic=profile_pic)
 
 @app.route("/filters", methods=["GET", "POST"])
 def Filters():
@@ -193,6 +195,56 @@ def Results():
         outcome.append(f"{i}. {result}\n")
     
     return render_template("index.html", outcome=outcome)
+
+def GetProfilePic(code):
+    user_profile_url = "https://api.spotify.com/v1/me"
+    access_token = session.get("access_token")
+
+    #if it doesn't exist it will get it
+    if not access_token:
+        data = {
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": redirect_uri,
+            "client_id": os.getenv("client_id"),
+            "client_secret": os.getenv("client_secret")
+        }
+
+        #sends out a post to the API of the data
+        auth_response = requests.post(token_url, data=data)
+
+        if auth_response.status_code == 200:
+            #gets the tokens from the response
+            tokens = auth_response.json()
+            #gets the access token specifically
+            access_token = tokens.get("access_token")
+            refresh_token = tokens.get("refresh_token")
+
+            session["access_token"] = access_token
+            session["refresh_token"] = refresh_token
+        else:
+            print(f"Failed to get access token.\n Error Code: {auth_response.status_code}\n {auth_response.text}")
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    user_response = requests.get(user_profile_url, headers=headers)
+
+    if user_response.status_code == 401:
+        access_token = refresh_access_token()
+
+        if access_token:
+            headers["Authorization"] = f"Bearer {access_token}"
+            user_response = requests.get(user_profile_url, headers=headers)
+
+    #gets the data
+    if user_response.status_code == 200:
+        user_data = user_response.json()
+        profile_pic = user_data["images"][0]["url"]
+        return profile_pic                     
+    else:
+        print(f"Failed to get user data.\n Error Code: {user_response.status_code}\n {user_response.text}")
 
 #remove this when uploading to web
 if __name__ == "__main__":

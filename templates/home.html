@@ -9,13 +9,42 @@
     <section class="banner">
         <h1 class="banner-text">
             Spotify API
-        </h1>
+        </h1><br>
+        <nav class="navbar">
+            <ul class="nav-links">
+                <li><a href="/home" class="active">Home</a></li>
+                <li><a href="/filters">Your Top Songs</a></li>
+            </ul>
+        </nav>
     </section>
 
-    <div class="info">
-        <h2 class="info_header">General Info</h2>
-        <h3 class="info_text">A while ago I decided to learn all about API's and how to use them. So as my practice with them I decided to use the Spotify API which has some nice documentation to learn what it can do and I thought it may be interesting for users to see information related to their Spotify. <br><br>
-        I encountered quite a few difficulties through this project such as using tokens and credentials to be able to access the info within the API, though now after having built it I feel like I have learnt a lot and an important programming skill.</h3>
+    <section class="two-column">
+        <div class="image-box">
+            <img src="../static/images/spotify-logo.png" alt="spotify logo">
+        </div>
+        <div class="info">
+            <h2 class="info_header">General Info</h2>
+            <h3 class="info_text">A while ago I decided to learn all about API's and how to use them. So as my practice with them I decided to use the Spotify API which has some nice documentation to learn what it can do and I thought it may be interesting for users to see information related to their Spotify. <br><br>
+            I encountered quite a few difficulties through this project such as using tokens and credentials to be able to access the info within the API, though now after having built it I feel like I have learnt a lot and an important programming skill.</h3>
+        </div>
+    </section>  
+
+    <section class="two-column">
+        <div class="image-box">
+            <img src="../static/images/flask-logo.png" alt="flask logo">
+        </div>
+        <div class="info">
+            <h2 class="info_header">Making the Website</h2>
+            <h3 class="info_text">Since I'm using python to run the API I need to use Flask, a python web framework, to run the website. Due to this I ran into many more difficulties, especially when trying to publish the website.<br><br>
+            I encountered quite a few difficulties through this project such as using tokens and credentials to be able to access the info within the API, though now after having built it I feel like I have learnt a lot and an important programming skill.</h3>
+        </div>
+    </section>
+
+    <div class="profile-container">
+        <img src="{{ profile_pic }}" alt="profile picture" class="profile-image">
     </div>
+    <!--<footer>
+        <h3>Miguel Monreal 2024</h3>
+    </footer> -->
 </body>
 </html>
