@@ -145,7 +145,7 @@ button[type="submit"] {
 .nav-links {
     list-style: none;
     display: inline-flex;
-    gap: 1rem; /* Space between links */
+    gap: 2rem; /* Space between links */
 }
 
 .nav-links a {

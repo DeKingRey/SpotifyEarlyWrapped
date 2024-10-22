@@ -1,0 +1,43 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Document</title>
+</head>
+<body>
+    <section class="banner">
+        <h1 class="banner-text">
+            Recommendation Filters
+        </h1>
+        <nav class="navbar">
+            <ul class="nav-links">
+                <li><a href="/home">Home</a></li>
+                <li><a href="/filters">Your Top Songs</a></li>
+                <li><a href="/r-filters" class="active">Recommendations</a></li>
+            </ul>
+        </nav>
+    </section>
+
+    <!--Maybe make the filters let the user decide to filter it based off tracks artists genres or a combination-->
+    <div class="form">
+        <h2 class="tutorial">Edit these filters to refine your recommendations.</h2>
+        <form action="{{ url_for('RecommendationFilters') }}" method="post">
+            <div class="form-text">
+                       
+                <label for="limit">Enter the amount of songs you want to see(up to 100):</label>
+                <input type="number" id="limit" name="limit" min="1" max="100" placeholder="Enter a number">
+
+                <br>
+
+                <button type="submit">View Results</button>
+            </div>
+        </form>
+    </div>
+
+    <!--<footer>
+        <h3>Miguel Monreal 2024</h3>
+    </footer>
+-->
+</body> 
+</html>

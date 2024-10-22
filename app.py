@@ -37,6 +37,7 @@ token_url = "https://accounts.spotify.com/api/token"
 #this link can be changed, might use queries instead of something specific later on
 user_info_url = "https://api.spotify.com/v1/me/top/tracks"
 
+song_ids = False
 
 @app.route("/")
 def Authorization():
@@ -80,7 +81,7 @@ def Filters():
         session["timeframe"] = timeframe
         session["limit"] = limit
 
-        FindTopSongs(code, timeframe, limit)
+        FindTopSongs(code, timeframe, limit, song_ids=False)
         return redirect(url_for("Results"))
     
     timeframe = session.get("timeframe", "")
@@ -88,7 +89,21 @@ def Filters():
 
     return render_template("filters.html")
 
-def FindTopSongs(code, timeframe, limit):
+@app.route("/r-filters", methods=["GET", "POST"])
+def RecommendationFilters():
+    code = session.get("code")
+    if request.method == "POST":
+        limit = request.form["limit"]
+
+        session["r-limit"] = limit
+
+        GetRecommendations(code, limit)
+        return redirect(url_for("RecommendationResults"))
+    
+    limit = session.get("r-limit", "")
+    return render_template("r-filters.html")
+
+def FindTopSongs(code, timeframe, limit, song_ids):
     #gets the auth key from a dictionary called request.arg
     #code = request.args.get("code")
 
@@ -129,8 +144,6 @@ def FindTopSongs(code, timeframe, limit):
         "limit": limit
     }
 
-    print(f"Timeframe: {timeframe} \n Limit: {limit}")
-
     user_response = requests.get(user_info_url, headers=headers, params=params)
 
     if user_response.status_code == 401:
@@ -148,9 +161,13 @@ def FindTopSongs(code, timeframe, limit):
             if albums == "items":
                 for album in user_data[albums]:
                     for items in album:
-                        if items == "name":
+                        if items == "id" and song_ids:
                             top_songs.append(album[items])
-        session["results"] = top_songs                             
+                            return top_songs
+                        elif items == "name":
+                            top_songs.append(album[items])
+        session["results"] = top_songs 
+        song_ids = False                            
     else:
         print(f"Failed to get user data.\n Error Code: {user_response.status_code}\n {user_response.text}")
 
@@ -182,19 +199,6 @@ def refresh_access_token():
     else:
         print("No refresh token available.")
         return None
-
-
-@app.route("/results")
-def Results():
-    i = 0
-    outcome = []
-    #need to get the results if the album type is not SINGLE
-    results = session.get("results", [])
-    for result in results:
-        i += 1
-        outcome.append(f"{i}. {result}\n")
-    
-    return render_template("index.html", outcome=outcome)
 
 def GetProfilePic(code):
     user_profile_url = "https://api.spotify.com/v1/me"
@@ -245,6 +249,90 @@ def GetProfilePic(code):
         return profile_pic                     
     else:
         print(f"Failed to get user data.\n Error Code: {user_response.status_code}\n {user_response.text}")
+
+def GetRecommendations(code, limit):
+    recommendations_url = "https://api.spotify.com/v1/recommendations"
+    access_token = session.get("access_token")
+
+    #if it doesn't exist it will get it
+    if not access_token:
+        data = {
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": redirect_uri,
+            "client_id": os.getenv("client_id"),
+            "client_secret": os.getenv("client_secret")
+        }
+
+        #sends out a post to the API of the data
+        auth_response = requests.post(token_url, data=data)
+
+        if auth_response.status_code == 200:
+            #gets the tokens from the response
+            tokens = auth_response.json()
+            #gets the access token specifically
+            access_token = tokens.get("access_token")
+            refresh_token = tokens.get("refresh_token")
+
+            session["access_token"] = access_token
+            session["refresh_token"] = refresh_token
+        else:
+            print(f"Failed to get access token.\n Error Code: {auth_response.status_code}\n {auth_response.text}")
+
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    ids = FindTopSongs(session.get("code"), "short_term", 5, song_ids=True)
+    seed_tracks = ""
+    for id in ids:
+        seed_tracks += id + ","
+    print(seed_tracks)
+    params = {
+        "limit": limit,
+        "seed_tracks": seed_tracks,
+    }
+    print(params)
+    user_response = requests.get(recommendations_url, headers=headers, params=params)
+
+    if user_response.status_code == 401:
+        access_token = refresh_access_token()
+
+        if access_token:
+            headers["Authorization"] = f"Bearer {access_token}"
+            user_response = requests.get(recommendations_url, headers=headers, params=params)
+
+    #gets the data
+    if user_response.status_code == 200:
+        user_data = user_response.json()
+        recommendations = []
+        for info in user_data["tracks"]:
+            recommendations.append(info["name"])
+        session["recommendations"] = recommendations         
+    else:
+        print(f"Failed to get user data.\n Error Code: {user_response.status_code}\n {user_response.text}")
+
+@app.route("/results")
+def Results():
+    i = 0
+    outcome = []
+    results = session.get("results", [])
+    for result in results:
+        i += 1
+        outcome.append(f"{i}. {result}\n")
+    
+    return render_template("index.html", outcome=outcome)
+
+@app.route("/recommendations")
+def RecommendationResults():
+    i = 0
+    outcome = []
+    results = session.get("recommendations", [])
+    for result in results:
+        i += 1
+        outcome.append(f"{i}. {result}\n")
+    
+    return render_template("recommendations.html", outcome=outcome)
 
 #remove this when uploading to web
 if __name__ == "__main__":
